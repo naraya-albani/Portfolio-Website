@@ -1,5 +1,3 @@
-"use client";
-
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -11,6 +9,7 @@ import {
   ExternalLink,
   Code2,
   Instagram,
+  Building2,
 } from "lucide-react";
 import { ThemeToggle } from "@/components/theme-toggle";
 import {
@@ -21,8 +20,24 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import { fetchDatabase, fetchPageBlocks } from "@/lib/notion";
 
-export default function Home() {
+export default async function Home() {
+  const blocks = await fetchPageBlocks();
+
+  const experienceBlock = blocks.filter(
+    (block: any) => block.child_database.title === "Experiences",
+  );
+  const projectBlock = blocks.filter(
+    (block: any) => block.child_database.title === "Projects",
+  );
+
+  const experiences = await fetchDatabase(experienceBlock?.[0].id);
+  const projects = await fetchDatabase(projectBlock?.[0].id);
+
+  console.log(experiences);
+  console.log(projects);
+
   return (
     <div className="min-h-screen bg-background p-4 md:p-8">
       <div className="max-w-6xl mx-auto">
@@ -169,76 +184,67 @@ export default function Home() {
                 <h3 className="font-bold text-card-foreground mb-4 font-sans">
                   Experiences
                 </h3>
-                <Dialog>
-                  <form>
-                    <DialogTrigger asChild>
-                      <button className="font-sans text-blue-500 hover:underline">
-                        See all
-                      </button>
-                    </DialogTrigger>
-                    <DialogContent className="sm:max-w-106.25">
-                      <DialogHeader>
-                        <DialogTitle>Edit profile</DialogTitle>
-                        <DialogDescription>
-                          Make changes to your profile here. Click save when
-                          you&apos;re done.
-                        </DialogDescription>
-                      </DialogHeader>
-                      <div className="grid gap-4">
-                        <div className="grid gap-3"></div>
-                        <div className="grid gap-3"></div>
+                {experiences.length > 3 && (
+                  <Dialog>
+                    <form>
+                      <DialogTrigger asChild>
+                        <button className="font-sans text-blue-500 hover:underline">
+                          See all
+                        </button>
+                      </DialogTrigger>
+                      <DialogContent className="sm:max-w-106.25">
+                        <DialogHeader>
+                          <DialogTitle>Edit profile</DialogTitle>
+                          <DialogDescription>
+                            Make changes to your profile here. Click save when
+                            you&apos;re done.
+                          </DialogDescription>
+                        </DialogHeader>
+                        <div className="grid gap-4">
+                          <div className="grid gap-3"></div>
+                          <div className="grid gap-3"></div>
+                        </div>
+                      </DialogContent>
+                    </form>
+                  </Dialog>
+                )}
+              </div>
+              {experiences.slice(0, 3).map((exp: any) => (
+                <Dialog key={exp.id}>
+                  <DialogTrigger asChild>
+                    <div className="flex items-start gap-3 hover:bg-accent p-2 rounded-xl cursor-pointer">
+                      <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
+                        <span className="text-xs font-bold text-primary font-sans">
+                          <Building2 />
+                        </span>
                       </div>
-                    </DialogContent>
-                  </form>
+                      <div className="flex-1">
+                        <h4 className="font-semibold text-card-foreground font-sans text-sm">
+                          {exp.properties.Name.title?.[0].plain_text}
+                        </h4>
+                        <p className="text-xs text-muted-foreground font-sans">
+                          {exp.properties.Status.status.name} •{" "}
+                          {new Intl.DateTimeFormat("en-US", {
+                            year: "numeric",
+                            month: "long",
+                          }).format(new Date(exp.properties.Date.date.start))}
+                        </p>
+                      </div>
+                    </div>
+                  </DialogTrigger>
+                  <DialogContent className="sm:max-w-106.25">
+                    <DialogHeader>
+                      <DialogTitle>
+                        {exp.properties.Name.title?.[0].plain_text}
+                      </DialogTitle>
+                    </DialogHeader>
+                    <div className="grid gap-4">
+                      <div className="grid gap-3"></div>
+                      <div className="grid gap-3"></div>
+                    </div>
+                  </DialogContent>
                 </Dialog>
-              </div>
-              <div className="">
-                <div className="flex items-start gap-3 hover:bg-accent p-2 rounded-xl">
-                  <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
-                    <span className="text-xs font-bold text-primary font-sans">
-                      TC
-                    </span>
-                  </div>
-                  <div className="flex-1">
-                    <h4 className="font-semibold text-card-foreground font-sans text-sm">
-                      Senior Full Stack Developer
-                    </h4>
-                    <p className="text-xs text-muted-foreground font-sans">
-                      TechCorp Inc. • 2022 - Present
-                    </p>
-                  </div>
-                </div>
-                <div className="flex items-start gap-3 hover:bg-accent p-2 rounded-xl">
-                  <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
-                    <span className="text-xs font-bold text-primary font-sans">
-                      ST
-                    </span>
-                  </div>
-                  <div className="flex-1">
-                    <h4 className="font-semibold text-card-foreground font-sans text-sm">
-                      Full Stack Developer
-                    </h4>
-                    <p className="text-xs text-muted-foreground font-sans">
-                      StartupXYZ • 2020 - 2022
-                    </p>
-                  </div>
-                </div>
-                <div className="flex items-start gap-3 hover:bg-accent p-2 rounded-xl">
-                  <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
-                    <span className="text-xs font-bold text-primary font-sans">
-                      ST
-                    </span>
-                  </div>
-                  <div className="flex-1">
-                    <h4 className="font-semibold text-card-foreground font-sans text-sm">
-                      Full Stack Developer
-                    </h4>
-                    <p className="text-xs text-muted-foreground font-sans">
-                      StartupXYZ • 2020 - 2022
-                    </p>
-                  </div>
-                </div>
-              </div>
+              ))}
             </div>
           </Card>
 
@@ -260,7 +266,7 @@ export default function Home() {
                     Projects
                   </span>
                   <span className="font-semibold text-card-foreground font-sans">
-                    25+
+                    {projects.length}+
                   </span>
                 </div>
                 <div className="flex justify-between">
@@ -338,8 +344,8 @@ export default function Home() {
                 <h3 className="font-bold text-card-foreground mb-4 font-sans">
                   Projects
                 </h3>
-                <Dialog>
-                  <form>
+                {projects.length > 2 && (
+                  <Dialog>
                     <DialogTrigger asChild>
                       <button className="font-sans text-blue-500 hover:underline">
                         See all
@@ -358,88 +364,88 @@ export default function Home() {
                         <div className="grid gap-3"></div>
                       </div>
                     </DialogContent>
-                  </form>
-                </Dialog>
+                  </Dialog>
+                )}
               </div>
               <div className="space-y-4">
-                <div className="flex items-start justify-between">
-                  <div className="flex-1">
-                    <h4 className="font-semibold text-card-foreground font-sans">
-                      E-Commerce Platform
-                    </h4>
-                    <p className="text-sm text-muted-foreground mb-2 font-sans">
-                      Modern e-commerce platform with React, Node.js, and
-                      PostgreSQL featuring payment processing and real-time
-                      inventory.
-                    </p>
-                    <div className="flex flex-wrap gap-1">
-                      <Badge
-                        variant="outline"
-                        className="text-xs font-sans rounded-full"
-                      >
-                        React
-                      </Badge>
-                      <Badge
-                        variant="outline"
-                        className="text-xs font-sans rounded-full"
-                      >
-                        Node.js
-                      </Badge>
-                      <Badge
-                        variant="outline"
-                        className="text-xs font-sans rounded-full"
-                      >
-                        PostgreSQL
-                      </Badge>
-                    </div>
-                  </div>
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    className="ml-3 font-sans bg-transparent hover:bg-primary/10 hover:scale-105 transition-all duration-200 rounded-full"
+                {projects.slice(0, 2).map((project: any) => (
+                  <div
+                    key={project.id}
+                    className="flex items-start justify-between"
                   >
-                    <ExternalLink className="w-4 h-4" />
-                  </Button>
-                </div>
+                    <div className="flex-1">
+                      <h4 className="font-semibold text-card-foreground font-sans">
+                        {project.properties.Name.title?.[0].plain_text}
+                      </h4>
+                      <p className="text-sm text-muted-foreground mb-2 font-sans">
+                        {
+                          project.properties.Description.rich_text?.[0]
+                            ?.plain_text
+                        }
+                      </p>
+                      <div className="flex flex-wrap gap-1">
+                        {project.properties.Tools.multi_select.map(
+                          (tool: any) => {
+                            // Fungsi untuk mendapatkan className berdasarkan warna
+                            const getColorClass = (color: string) => {
+                              switch (color) {
+                                case "blue":
+                                  return "bg-blue-50 text-blue-700 dark:bg-blue-950 dark:text-blue-300";
+                                case "green":
+                                  return "bg-green-50 text-green-700 dark:bg-green-950 dark:text-green-300";
+                                case "gray":
+                                  return "bg-gray-50 text-gray-700 dark:bg-gray-950 dark:text-gray-300";
+                                case "purple":
+                                  return "bg-purple-50 text-purple-700 dark:bg-purple-950 dark:text-purple-300";
+                                case "red":
+                                  return "bg-red-50 text-red-700 dark:bg-red-950 dark:text-red-300";
+                                case "orange":
+                                  return "bg-orange-50 text-orange-700 dark:bg-orange-950 dark:text-orange-300";
+                                case "yellow":
+                                  return "bg-yellow-50 text-yellow-700 dark:bg-yellow-950 dark:text-yellow-300";
+                                case "pink":
+                                  return "bg-pink-50 text-pink-700 dark:bg-pink-950 dark:text-pink-300";
+                                default:
+                                  return "bg-gray-50 text-gray-700 dark:bg-gray-950 dark:text-gray-300";
+                              }
+                            };
 
-                <div className="flex items-start justify-between">
-                  <div className="flex-1">
-                    <h4 className="font-semibold text-card-foreground font-sans">
-                      Task Management App
-                    </h4>
-                    <p className="text-sm text-muted-foreground mb-2 font-sans">
-                      Collaborative task management with real-time updates,
-                      drag-and-drop functionality, and team features.
-                    </p>
-                    <div className="flex flex-wrap gap-1">
-                      <Badge
-                        variant="outline"
-                        className="text-xs font-sans rounded-full"
-                      >
-                        Next.js
-                      </Badge>
-                      <Badge
-                        variant="outline"
-                        className="text-xs font-sans rounded-full"
-                      >
-                        TypeScript
-                      </Badge>
-                      <Badge
-                        variant="outline"
-                        className="text-xs font-sans rounded-full"
-                      >
-                        Socket.io
-                      </Badge>
+                            return (
+                              <Badge
+                                key={tool.id}
+                                className={`text-xs font-sans rounded-full ${getColorClass(tool.color)}`}
+                              >
+                                {tool.name}
+                              </Badge>
+                            );
+                          },
+                        )}
+                      </div>
                     </div>
+                    <Dialog>
+                      <DialogTrigger asChild>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          className="ml-3 font-sans bg-transparent hover:bg-primary/10 hover:scale-105 transition-all duration-200 rounded-full"
+                        >
+                          <ExternalLink className="w-4 h-4" />
+                        </Button>
+                      </DialogTrigger>
+                      <DialogContent className="sm:max-w-106.25">
+                        <DialogHeader>
+                          <DialogTitle>
+                            {project.properties.Name.title?.[0].plain_text}
+                          </DialogTitle>
+                        </DialogHeader>
+                        <div className="grid gap-4">
+                          <div className="grid gap-3"></div>
+                          <div className="grid gap-3"></div>
+                        </div>
+                      </DialogContent>
+                    </Dialog>
                   </div>
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    className="ml-3 font-sans bg-transparent hover:bg-primary/10 hover:scale-105 transition-all duration-200 rounded-full"
-                  >
-                    <ExternalLink className="w-4 h-4" />
-                  </Button>
-                </div>
+                ))}
               </div>
             </div>
           </Card>
