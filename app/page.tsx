@@ -35,8 +35,8 @@ export default async function Home() {
   const experiences = await fetchDatabase(experienceBlock?.[0].id);
   const projects = await fetchDatabase(projectBlock?.[0].id);
 
-  console.log(experiences);
-  console.log(projects);
+  // console.log(experiences);
+  // console.log(projects);
 
   return (
     <div className="min-h-screen bg-background p-4 md:p-8">
