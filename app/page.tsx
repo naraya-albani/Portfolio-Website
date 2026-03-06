@@ -10,6 +10,8 @@ import {
   Code2,
   Instagram,
   Building2,
+  Clock,
+  MapPin,
 } from "lucide-react";
 import { ThemeToggle } from "@/components/theme-toggle";
 import {
@@ -21,6 +23,8 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { fetchDatabase, fetchPageBlocks } from "@/lib/notion";
+import { ExperienceCard } from "@/components/experience-card";
+import Image from "next/image";
 
 export default async function Home() {
   const blocks = await fetchPageBlocks();
@@ -212,35 +216,78 @@ export default async function Home() {
               {experiences.slice(0, 3).map((exp: any) => (
                 <Dialog key={exp.id}>
                   <DialogTrigger asChild>
-                    <div className="flex items-start gap-3 hover:bg-accent p-2 rounded-xl cursor-pointer">
-                      <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
-                        <span className="text-xs font-bold text-primary font-sans">
-                          <Building2 />
-                        </span>
+                    <div className="flex items-start gap-3 hover:bg-accent p-2 rounded-xl cursor-pointer transition-colors">
+                      {/* logo perusahaan */}
+                      <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center shrink-0 overflow-hidden">
+                        {exp.icon.external.url ? (
+                          <Image
+                            src={exp.icon.external.url}
+                            alt={exp.properties.Name.title?.[0].plain_text}
+                            width={200}
+                            height={200}
+                            className="w-full h-full object-cover"
+                          />
+                        ) : (
+                          <Building2 className="w-5 h-5 text-primary" />
+                        )}
                       </div>
-                      <div className="flex-1">
-                        <h4 className="font-semibold text-card-foreground font-sans text-sm">
+
+                      <div className="flex-1 min-w-0">
+                        <h4 className="font-semibold text-card-foreground text-sm truncate">
                           {exp.properties.Name.title?.[0].plain_text}
                         </h4>
-                        <p className="text-xs text-muted-foreground font-sans">
+                        <p className="text-xs text-muted-foreground">
                           {exp.properties.Status.status.name} •{" "}
                           {new Intl.DateTimeFormat("en-US", {
                             year: "numeric",
                             month: "long",
-                          }).format(new Date(exp.properties.Date.date.start))}
+                          }).format(
+                            new Date(exp.properties.Date.date.start),
+                          )}{" "}
+                          – Present
                         </p>
                       </div>
                     </div>
                   </DialogTrigger>
-                  <DialogContent className="sm:max-w-106.25">
-                    <DialogHeader>
-                      <DialogTitle>
-                        {exp.properties.Name.title?.[0].plain_text}
-                      </DialogTitle>
+                  <DialogContent className="sm:max-w-lg max-h-[85vh] overflow-y-auto">
+                    <DialogHeader className="pb-2">
+                      {/* header: logo + nama perusahaan */}
+                      <div className="flex items-center gap-3">
+                        <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center shrink-0 overflow-hidden border border-border">
+                          {exp.icon.external.url ? (
+                            <Image
+                              src={exp.icon.external.url}
+                              alt={exp.properties.Name.title?.[0].plain_text}
+                              width={200}
+                              height={200}
+                              className="w-full h-full object-cover"
+                            />
+                          ) : (
+                            <Building2 className="w-6 h-6 text-primary" />
+                          )}
+                        </div>
+                        <div>
+                          <DialogTitle className="text-base leading-tight">
+                            {exp.properties.Name.title?.[0].plain_text}
+                          </DialogTitle>
+                          <div className="flex items-center gap-3 mt-0.5 flex-wrap">
+                            <span className="flex items-center gap-1 text-xs text-muted-foreground">
+                              <Clock className="w-3 h-3" />
+                              {exp.type} · {exp.totalDuration}
+                            </span>
+                          </div>
+                        </div>
+                      </div>
                     </DialogHeader>
-                    <div className="grid gap-4">
-                      <div className="grid gap-3"></div>
-                      <div className="grid gap-3"></div>
+
+                    {/* divider */}
+                    <div className="border-t border-border" />
+
+                    {/* daftar peran */}
+                    <div className="flex flex-col gap-5 pt-1">
+                      {/* {exp.roles.map((role, i) => (
+                        <ExperienceCard key={i} role={role} />
+                      ))} */}
                     </div>
                   </DialogContent>
                 </Dialog>
@@ -433,14 +480,39 @@ export default async function Home() {
                         </Button>
                       </DialogTrigger>
                       <DialogContent className="sm:max-w-106.25">
-                        <DialogHeader>
-                          <DialogTitle>
-                            {project.properties.Name.title?.[0].plain_text}
-                          </DialogTitle>
+                        <DialogHeader className="pb-2">
+                          {/* header: logo + nama perusahaan */}
+                          <div className="flex items-center gap-3">
+                            <div>
+                              <DialogTitle className="leading-tight">
+                                {project.properties.Name.title?.[0].plain_text}
+                              </DialogTitle>
+                              <div className="flex items-center gap-3 mt-0.5 flex-wrap">
+                                <span className="flex items-center gap-1 text-xs text-muted-foreground">
+                                  <Clock className="w-3 h-3" />
+                                  {new Intl.DateTimeFormat("en-US", {
+                                    year: "numeric",
+                                    month: "long",
+                                  }).format(
+                                    new Date(
+                                      project.properties.Created.date.start,
+                                    ),
+                                  )}
+                                </span>
+                                <span>{project.properties.URL.url}</span>
+                              </div>
+                            </div>
+                          </div>
                         </DialogHeader>
-                        <div className="grid gap-4">
-                          <div className="grid gap-3"></div>
-                          <div className="grid gap-3"></div>
+
+                        {/* divider */}
+                        <div className="border-t border-border" />
+
+                        {/* daftar peran */}
+                        <div className="flex flex-col gap-5 pt-1">
+                          {/* {exp.roles.map((role, i) => (
+                        <ExperienceCard key={i} role={role} />
+                      ))} */}
                         </div>
                       </DialogContent>
                     </Dialog>
