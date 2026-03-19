@@ -11,7 +11,6 @@ import {
   Instagram,
   Building2,
   Clock,
-  MapPin,
 } from "lucide-react";
 import { ThemeToggle } from "@/components/theme-toggle";
 import {
@@ -249,47 +248,7 @@ export default async function Home() {
                       </div>
                     </div>
                   </DialogTrigger>
-                  <DialogContent className="sm:max-w-lg max-h-[85vh] overflow-y-auto">
-                    <DialogHeader className="pb-2">
-                      {/* header: logo + nama perusahaan */}
-                      <div className="flex items-center gap-3">
-                        <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center shrink-0 overflow-hidden border border-border">
-                          {exp.icon.external.url ? (
-                            <Image
-                              src={exp.icon.external.url}
-                              alt={exp.properties.Name.title?.[0].plain_text}
-                              width={200}
-                              height={200}
-                              className="w-full h-full object-cover"
-                            />
-                          ) : (
-                            <Building2 className="w-6 h-6 text-primary" />
-                          )}
-                        </div>
-                        <div>
-                          <DialogTitle className="text-base leading-tight">
-                            {exp.properties.Name.title?.[0].plain_text}
-                          </DialogTitle>
-                          <div className="flex items-center gap-3 mt-0.5 flex-wrap">
-                            <span className="flex items-center gap-1 text-xs text-muted-foreground">
-                              <Clock className="w-3 h-3" />
-                              {exp.type} · {exp.totalDuration}
-                            </span>
-                          </div>
-                        </div>
-                      </div>
-                    </DialogHeader>
-
-                    {/* divider */}
-                    <div className="border-t border-border" />
-
-                    {/* daftar peran */}
-                    <div className="flex flex-col gap-5 pt-1">
-                      {/* {exp.roles.map((role, i) => (
-                        <ExperienceCard key={i} role={role} />
-                      ))} */}
-                    </div>
-                  </DialogContent>
+                  <ExperienceCard exp={exp} />
                 </Dialog>
               ))}
             </div>
