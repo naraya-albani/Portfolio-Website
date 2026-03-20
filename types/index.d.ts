@@ -6,7 +6,7 @@ export interface Experience {
     external: {
       url: string;
     };
-  };
+  } | null;
   properties: {
     "Files & media": {
       type: "files";
@@ -17,12 +17,18 @@ export interface Experience {
           url: string;
           expiry_time: string;
         };
+        external: {
+          url: string;
+          expiry_time: string;
+        };
       }[];
     };
     Position: {
-      type: "rich_text";
-      rich_text: {
-        plain_text: string;
+      type: "multi_select";
+      multi_select: {
+        id: string;
+        name: string;
+        color: string;
       }[];
     };
     Description: {

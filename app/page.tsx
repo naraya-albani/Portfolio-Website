@@ -24,9 +24,14 @@ import {
 import { fetchDatabase, fetchPageBlocks } from "@/lib/notion";
 import { ExperienceCard } from "@/components/experience-card";
 import Image from "next/image";
+import { Experience } from "@/types";
+import { getRepos } from "@/lib/github";
+import { Separator } from "@/components/ui/separator";
 
 export default async function Home() {
   const blocks = await fetchPageBlocks();
+
+  const repos = await getRepos();
 
   const experienceBlock = blocks.filter(
     (block: any) => block.child_database.title === "Experiences",
@@ -35,11 +40,13 @@ export default async function Home() {
     (block: any) => block.child_database.title === "Projects",
   );
 
-  const experiences = await fetchDatabase(experienceBlock?.[0].id);
+  const experiences = (await fetchDatabase(
+    experienceBlock?.[0].id,
+  )) as unknown as Experience[];
   const projects = await fetchDatabase(projectBlock?.[0].id);
 
   // console.log(experiences);
-  // console.log(projects);
+  console.log(projects);
 
   return (
     <div className="min-h-screen bg-background p-4 md:p-8">
@@ -212,13 +219,13 @@ export default async function Home() {
                   </Dialog>
                 )}
               </div>
-              {experiences.slice(0, 3).map((exp: any) => (
+              {experiences.slice(0, 3).map((exp) => (
                 <Dialog key={exp.id}>
                   <DialogTrigger asChild>
                     <div className="flex items-start gap-3 hover:bg-accent p-2 rounded-xl cursor-pointer transition-colors">
                       {/* logo perusahaan */}
                       <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center shrink-0 overflow-hidden">
-                        {exp.icon.external.url ? (
+                        {exp.icon?.external.url ? (
                           <Image
                             src={exp.icon.external.url}
                             alt={exp.properties.Name.title?.[0].plain_text}
@@ -236,7 +243,14 @@ export default async function Home() {
                           {exp.properties.Name.title?.[0].plain_text}
                         </h4>
                         <p className="text-xs text-muted-foreground">
-                          {exp.properties.Status.status.name} •{" "}
+                          <Badge
+                            color={
+                              exp.properties.Position.multi_select?.[0].color
+                            }
+                          >
+                            {exp.properties.Position.multi_select?.[0].name}
+                          </Badge>{" "}
+                          •{" "}
                           {new Intl.DateTimeFormat("en-US", {
                             year: "numeric",
                             month: "long",
@@ -348,9 +362,9 @@ export default async function Home() {
             <div className="relative z-10">
               <div className="flex justify-between">
                 <h3 className="font-bold text-card-foreground mb-4 font-sans">
-                  Projects
+                  Recent Projects
                 </h3>
-                {projects.length > 2 && (
+                {repos.length > 2 && (
                   <Dialog>
                     <DialogTrigger asChild>
                       <button className="font-sans text-blue-500 hover:underline">
@@ -359,11 +373,7 @@ export default async function Home() {
                     </DialogTrigger>
                     <DialogContent className="sm:max-w-106.25">
                       <DialogHeader>
-                        <DialogTitle>Edit profile</DialogTitle>
-                        <DialogDescription>
-                          Make changes to your profile here. Click save when
-                          you&apos;re done.
-                        </DialogDescription>
+                        <DialogTitle>Projects</DialogTitle>
                       </DialogHeader>
                       <div className="grid gap-4">
                         <div className="grid gap-3"></div>
@@ -374,22 +384,19 @@ export default async function Home() {
                 )}
               </div>
               <div className="space-y-4">
-                {projects.slice(0, 2).map((project: any) => (
+                {repos.slice(0, 2).map((repo: any) => (
                   <div
-                    key={project.id}
+                    key={repo.id}
                     className="flex items-start justify-between"
                   >
                     <div className="flex-1">
                       <h4 className="font-semibold text-card-foreground font-sans">
-                        {project.properties.Name.title?.[0].plain_text}
+                        {repo.name.replace(/-/g, " ")}
                       </h4>
                       <p className="text-sm text-muted-foreground mb-2 font-sans">
-                        {
-                          project.properties.Description.rich_text?.[0]
-                            ?.plain_text
-                        }
+                        {repo.description}
                       </p>
-                      <div className="flex flex-wrap gap-1">
+                      {/* <div className="flex flex-wrap gap-1">
                         {project.properties.Tools.multi_select.map(
                           (tool: any) => {
                             // Fungsi untuk mendapatkan className berdasarkan warna
@@ -426,7 +433,7 @@ export default async function Home() {
                             );
                           },
                         )}
-                      </div>
+                      </div> */}
                     </div>
                     <Dialog>
                       <DialogTrigger asChild>
@@ -444,7 +451,7 @@ export default async function Home() {
                           <div className="flex items-center gap-3">
                             <div>
                               <DialogTitle className="leading-tight">
-                                {project.properties.Name.title?.[0].plain_text}
+                                {repo.name.replace(/-/g, " ")}
                               </DialogTitle>
                               <div className="flex items-center gap-3 mt-0.5 flex-wrap">
                                 <span className="flex items-center gap-1 text-xs text-muted-foreground">
@@ -452,27 +459,14 @@ export default async function Home() {
                                   {new Intl.DateTimeFormat("en-US", {
                                     year: "numeric",
                                     month: "long",
-                                  }).format(
-                                    new Date(
-                                      project.properties.Created.date.start,
-                                    ),
-                                  )}
+                                  }).format(new Date(repo.created_at))}
                                 </span>
-                                <span>{project.properties.URL.url}</span>
                               </div>
                             </div>
                           </div>
                         </DialogHeader>
 
-                        {/* divider */}
-                        <div className="border-t border-border" />
-
-                        {/* daftar peran */}
-                        <div className="flex flex-col gap-5 pt-1">
-                          {/* {exp.roles.map((role, i) => (
-                        <ExperienceCard key={i} role={role} />
-                      ))} */}
-                        </div>
+                        <Separator className="shrink-0" />
                       </DialogContent>
                     </Dialog>
                   </div>
