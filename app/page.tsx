@@ -6,11 +6,9 @@ import {
   Linkedin,
   Twitter,
   Mail,
-  ExternalLink,
   Code2,
   Instagram,
   Building2,
-  Clock,
 } from "lucide-react";
 import { ThemeToggle } from "@/components/theme-toggle";
 import {
@@ -26,7 +24,17 @@ import { ExperienceCard } from "@/components/experience-card";
 import Image from "next/image";
 import { Experience } from "@/types";
 import { getRepos } from "@/lib/github";
-import { Separator } from "@/components/ui/separator";
+import {
+  Item,
+  ItemContent,
+  ItemDescription,
+  ItemFooter,
+  ItemGroup,
+  ItemTitle,
+} from "@/components/ui/item";
+import { ProjectCard } from "@/components/project-card";
+import { LanguageIcon } from "@/components/language-icon";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 export default async function Home() {
   const blocks = await fetchPageBlocks();
@@ -36,17 +44,12 @@ export default async function Home() {
   const experienceBlock = blocks.filter(
     (block: any) => block.child_database.title === "Experiences",
   );
-  const projectBlock = blocks.filter(
-    (block: any) => block.child_database.title === "Projects",
-  );
 
   const experiences = (await fetchDatabase(
     experienceBlock?.[0].id,
   )) as unknown as Experience[];
-  const projects = await fetchDatabase(projectBlock?.[0].id);
 
   // console.log(experiences);
-  console.log(projects);
 
   return (
     <div className="min-h-screen bg-background p-4 md:p-8">
@@ -286,7 +289,7 @@ export default async function Home() {
                     Projects
                   </span>
                   <span className="font-semibold text-card-foreground font-sans">
-                    {projects.length}+
+                    {repos.length}+
                   </span>
                 </div>
                 <div className="flex justify-between">
@@ -375,103 +378,60 @@ export default async function Home() {
                       <DialogHeader>
                         <DialogTitle>Projects</DialogTitle>
                       </DialogHeader>
-                      <div className="grid gap-4">
-                        <div className="grid gap-3"></div>
-                        <div className="grid gap-3"></div>
-                      </div>
+                      <ScrollArea className="max-h-96">
+                        <ItemGroup className="gap-2">
+                          {repos.map((repo: any) => (
+                            <Item
+                              key={repo.id}
+                              variant="outline"
+                              role="listitem"
+                              className="cursor-pointer transition-colors hover:bg-accent"
+                            >
+                              <Dialog>
+                                <DialogTrigger asChild>
+                                  <ItemContent>
+                                    <ItemTitle className="line-clamp-1">
+                                      {repo.name}
+                                    </ItemTitle>
+                                    <ItemDescription>
+                                      {repo.description}
+                                    </ItemDescription>
+                                  </ItemContent>
+                                </DialogTrigger>
+                              </Dialog>
+                            </Item>
+                          ))}
+                        </ItemGroup>
+                      </ScrollArea>
                     </DialogContent>
                   </Dialog>
                 )}
               </div>
-              <div className="space-y-4">
+              <ItemGroup className="gap-2">
                 {repos.slice(0, 2).map((repo: any) => (
-                  <div
-                    key={repo.id}
-                    className="flex items-start justify-between"
-                  >
-                    <div className="flex-1">
-                      <h4 className="font-semibold text-card-foreground font-sans">
-                        {repo.name.replace(/-/g, " ")}
-                      </h4>
-                      <p className="text-sm text-muted-foreground mb-2 font-sans">
-                        {repo.description}
-                      </p>
-                      {/* <div className="flex flex-wrap gap-1">
-                        {project.properties.Tools.multi_select.map(
-                          (tool: any) => {
-                            // Fungsi untuk mendapatkan className berdasarkan warna
-                            const getColorClass = (color: string) => {
-                              switch (color) {
-                                case "blue":
-                                  return "bg-blue-50 text-blue-700 dark:bg-blue-950 dark:text-blue-300";
-                                case "green":
-                                  return "bg-green-50 text-green-700 dark:bg-green-950 dark:text-green-300";
-                                case "gray":
-                                  return "bg-gray-50 text-gray-700 dark:bg-gray-950 dark:text-gray-300";
-                                case "purple":
-                                  return "bg-purple-50 text-purple-700 dark:bg-purple-950 dark:text-purple-300";
-                                case "red":
-                                  return "bg-red-50 text-red-700 dark:bg-red-950 dark:text-red-300";
-                                case "orange":
-                                  return "bg-orange-50 text-orange-700 dark:bg-orange-950 dark:text-orange-300";
-                                case "yellow":
-                                  return "bg-yellow-50 text-yellow-700 dark:bg-yellow-950 dark:text-yellow-300";
-                                case "pink":
-                                  return "bg-pink-50 text-pink-700 dark:bg-pink-950 dark:text-pink-300";
-                                default:
-                                  return "bg-gray-50 text-gray-700 dark:bg-gray-950 dark:text-gray-300";
-                              }
-                            };
-
-                            return (
-                              <Badge
-                                key={tool.id}
-                                className={`text-xs font-sans rounded-full ${getColorClass(tool.color)}`}
-                              >
-                                {tool.name}
-                              </Badge>
-                            );
-                          },
-                        )}
-                      </div> */}
-                    </div>
-                    <Dialog>
-                      <DialogTrigger asChild>
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          className="ml-3 font-sans bg-transparent hover:bg-primary/10 hover:scale-105 transition-all duration-200 rounded-full"
-                        >
-                          <ExternalLink className="w-4 h-4" />
-                        </Button>
-                      </DialogTrigger>
-                      <DialogContent className="sm:max-w-106.25">
-                        <DialogHeader className="pb-2">
-                          {/* header: logo + nama perusahaan */}
-                          <div className="flex items-center gap-3">
-                            <div>
-                              <DialogTitle className="leading-tight">
-                                {repo.name.replace(/-/g, " ")}
-                              </DialogTitle>
-                              <div className="flex items-center gap-3 mt-0.5 flex-wrap">
-                                <span className="flex items-center gap-1 text-xs text-muted-foreground">
-                                  <Clock className="w-3 h-3" />
-                                  {new Intl.DateTimeFormat("en-US", {
-                                    year: "numeric",
-                                    month: "long",
-                                  }).format(new Date(repo.created_at))}
-                                </span>
-                              </div>
-                            </div>
-                          </div>
-                        </DialogHeader>
-
-                        <Separator className="shrink-0" />
-                      </DialogContent>
-                    </Dialog>
-                  </div>
+                  <Dialog key={repo.id}>
+                    <DialogTrigger asChild>
+                      <Item
+                        variant="outline"
+                        role="listitem"
+                        className="cursor-pointer transition-colors hover:bg-accent"
+                      >
+                        <ItemContent>
+                          <ItemTitle>
+                            <h1 className="font-semibold">{repo.name}</h1>
+                            {repo.topics.map((topic: string, i: number) => (
+                              <Badge key={i}>{topic}</Badge>
+                            ))}
+                            <LanguageIcon language={repo.language} />
+                          </ItemTitle>
+                          <ItemDescription>{repo.description}</ItemDescription>
+                        </ItemContent>
+                      </Item>
+                    </DialogTrigger>
+                    <ProjectCard />
+                  </Dialog>
                 ))}
-              </div>
+              </ItemGroup>
             </div>
           </Card>
         </div>
