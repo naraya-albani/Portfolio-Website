@@ -24,16 +24,8 @@ import { ExperienceCard } from "@/components/experience-card";
 import Image from "next/image";
 import { Experience } from "@/types";
 import { getRepos } from "@/lib/github";
-import {
-  Item,
-  ItemContent,
-  ItemDescription,
-  ItemFooter,
-  ItemGroup,
-  ItemTitle,
-} from "@/components/ui/item";
-import { ProjectCard } from "@/components/project-card";
-import { LanguageIcon } from "@/components/language-icon";
+import { ItemGroup } from "@/components/ui/item";
+import { ProjectCard, ProjectItem } from "@/components/project-components";
 import { ScrollArea } from "@/components/ui/scroll-area";
 
 export default async function Home() {
@@ -381,25 +373,12 @@ export default async function Home() {
                       <ScrollArea className="max-h-96">
                         <ItemGroup className="gap-2">
                           {repos.map((repo: any) => (
-                            <Item
-                              key={repo.id}
-                              variant="outline"
-                              role="listitem"
-                              className="cursor-pointer transition-colors hover:bg-accent"
-                            >
-                              <Dialog>
-                                <DialogTrigger asChild>
-                                  <ItemContent>
-                                    <ItemTitle className="line-clamp-1">
-                                      {repo.name}
-                                    </ItemTitle>
-                                    <ItemDescription>
-                                      {repo.description}
-                                    </ItemDescription>
-                                  </ItemContent>
-                                </DialogTrigger>
-                              </Dialog>
-                            </Item>
+                            <Dialog key={repo.id}>
+                              <DialogTrigger asChild>
+                                <ProjectItem repo={repo} />
+                              </DialogTrigger>
+                              <ProjectCard repo={repo} />
+                            </Dialog>
                           ))}
                         </ItemGroup>
                       </ScrollArea>
@@ -411,24 +390,9 @@ export default async function Home() {
                 {repos.slice(0, 2).map((repo: any) => (
                   <Dialog key={repo.id}>
                     <DialogTrigger asChild>
-                      <Item
-                        variant="outline"
-                        role="listitem"
-                        className="cursor-pointer transition-colors hover:bg-accent"
-                      >
-                        <ItemContent>
-                          <ItemTitle>
-                            <h1 className="font-semibold">{repo.name}</h1>
-                            {repo.topics.map((topic: string, i: number) => (
-                              <Badge key={i}>{topic}</Badge>
-                            ))}
-                            <LanguageIcon language={repo.language} />
-                          </ItemTitle>
-                          <ItemDescription>{repo.description}</ItemDescription>
-                        </ItemContent>
-                      </Item>
+                      <ProjectItem repo={repo} />
                     </DialogTrigger>
-                    <ProjectCard />
+                    <ProjectCard repo={repo} />
                   </Dialog>
                 ))}
               </ItemGroup>

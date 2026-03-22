@@ -2,7 +2,13 @@
 
 import Image from "next/image";
 
-export function LanguageIcon({ language }: { language: string }) {
+export function LanguageIcon({
+  language,
+}: {
+  language: string | null | undefined;
+}) {
+  if (!language) return null;
+
   return (
     <Image
       src={`https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/${language.toLowerCase()}/${language.toLowerCase()}-original.svg`}
