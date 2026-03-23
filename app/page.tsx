@@ -6,7 +6,6 @@ import {
   Linkedin,
   Twitter,
   Mail,
-  Code2,
   Instagram,
   Building2,
 } from "lucide-react";
@@ -24,33 +23,41 @@ import { ExperienceCard } from "@/components/experience-card";
 import Image from "next/image";
 import { Experience } from "@/types";
 import { getRepos } from "@/lib/github";
-import { ItemGroup } from "@/components/ui/item";
+import {
+  Item,
+  ItemActions,
+  ItemContent,
+  ItemDescription,
+  ItemGroup,
+  ItemMedia,
+  ItemTitle,
+} from "@/components/ui/item";
 import { ProjectCard, ProjectItem } from "@/components/project-components";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 export default async function Home() {
   const blocks = await fetchPageBlocks();
 
+  const cvBlock = blocks.find((block: any) => block.type === "file");
+  const cvUrl = (cvBlock as any).file.file.url;
+
   const repos = await getRepos();
 
   const experienceBlock = blocks.filter(
-    (block: any) => block.child_database.title === "Experiences",
+    (block: any) =>
+      block.type === "child_database" &&
+      block.child_database?.title === "Experiences",
   );
 
   const experiences = (await fetchDatabase(
     experienceBlock?.[0].id,
-  )) as unknown as Experience[];
-
-  // console.log(experiences);
+  )) as Experience[];
 
   return (
     <div className="min-h-screen bg-background p-4 md:p-8">
       <div className="max-w-6xl mx-auto">
         <div className="flex justify-end mb-6 gap-4">
-          <Button size="sm">Hire Me</Button>
-          <Button variant="outline" size="sm">
-            Download CV
-          </Button>
           <ThemeToggle />
         </div>
 
@@ -61,30 +68,39 @@ export default async function Home() {
             className="md:col-span-3 lg:col-span-2 md:row-span-2 p-6 bg-card border border-border relative rounded-2xl shadow-none"
           >
             <div className="flex flex-col h-full relative z-10">
-              <div className="flex items-start gap-4 mb-4">
-                <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center">
-                  <span className="text-2xl font-bold text-primary font-sans">
-                    FM
-                  </span>
-                </div>
-                <div>
-                  <h2 className="text-xl font-bold text-card-foreground font-sans">
-                    Naraya Albani
-                  </h2>
-                  <div className="flex items-center gap-2 text-sm text-muted-foreground mt-1">
-                    <Code2 className="w-4 h-4" />
-                    <span className="font-sans">Software Engineer</span>
-                  </div>
-                </div>
-              </div>
+              <Item className="p-0 mb-4">
+                <ItemMedia>
+                  <Avatar size="lg">
+                    <AvatarImage
+                      src="https://github.com/naraya-albani.png"
+                      alt="@naraya-albani"
+                    />
+                    <AvatarFallback>NA</AvatarFallback>
+                  </Avatar>
+                </ItemMedia>
+                <ItemContent>
+                  <ItemTitle>Naraya Albani</ItemTitle>
+                  <ItemDescription>Full-stack Web Developer</ItemDescription>
+                </ItemContent>
+                <ItemActions>
+                  <Button variant="outline" size="sm" asChild>
+                    <a
+                      href={cvUrl}
+                      download
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      Download CV
+                    </a>
+                  </Button>
+                </ItemActions>
+              </Item>
               <p className="text-card-foreground leading-relaxed font-sans flex-1 text-sm">
-                Undergraduate Informatics Engineering student with experience in
-                UI/UX design, software engineering, and project management.
-                Skilled in translating user and stakeholder needs into
-                structured requirements, user flows, and high-fidelity
-                prototypes across digital projects. Strong foundation in user
-                research and cross-functional collaboration, with an interest in
-                building scalable, user-centered software solutions.
+                Mahasiswa Teknik Informatika dengan pengalaman di bidang
+                pengembangan perangkat lunak, desain UI/UX, dan manajemen
+                proyek. Terampil dalam membangun aplikasi web dan mobile
+                menggunakan teknologi modern, serta merancang arsitektur sistem
+                yang efisien.
               </p>
               <div className="space-y-4 mt-4">
                 <div>
