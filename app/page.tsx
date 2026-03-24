@@ -35,6 +35,7 @@ import {
 import { ProjectCard, ProjectItem } from "@/components/project-components";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { GitHubContributions } from "@/components/github-contribution";
 
 export default async function Home() {
   const blocks = await fetchPageBlocks();
@@ -98,10 +99,9 @@ export default async function Home() {
               <p className="text-card-foreground leading-relaxed font-sans flex-1 text-sm">
                 Mahasiswa Teknik Informatika dengan pengalaman di bidang
                 pengembangan perangkat lunak, desain UI/UX, dan manajemen
-                proyek. Terampil dalam membangun aplikasi web dan mobile
-                menggunakan teknologi modern, serta merancang arsitektur sistem
-                yang efisien.
+                proyek.
               </p>
+              <GitHubContributions />
               <div className="space-y-4 mt-4">
                 <div>
                   <h3 className="font-bold text-card-foreground font-sans">
