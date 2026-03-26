@@ -1,6 +1,5 @@
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import {
   Github,
   Linkedin,
@@ -23,19 +22,12 @@ import { ExperienceCard } from "@/components/experience-card";
 import Image from "next/image";
 import { Experience } from "@/types";
 import { getRepos } from "@/lib/github";
-import {
-  Item,
-  ItemActions,
-  ItemContent,
-  ItemDescription,
-  ItemGroup,
-  ItemMedia,
-  ItemTitle,
-} from "@/components/ui/item";
+import { ItemGroup } from "@/components/ui/item";
 import { ProjectCard, ProjectItem } from "@/components/project-components";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { GitHubContributions } from "@/components/github-contribution";
+import { AboutCard } from "@/components/about-card";
+import { Suspense } from "react";
 
 export default async function Home() {
   const blocks = await fetchPageBlocks();
@@ -64,136 +56,18 @@ export default async function Home() {
 
         <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-6 h-200 md:h-150">
           {/* About Me - Tall Card (Top Left) */}
-          <Card
-            id="about"
-            className="md:col-span-3 lg:col-span-2 md:row-span-2 p-6 bg-card border border-border relative rounded-2xl shadow-none"
-          >
-            <div className="flex flex-col h-full relative z-10">
-              <Item className="p-0 mb-4">
-                <ItemMedia>
-                  <Avatar size="lg">
-                    <AvatarImage
-                      src="https://github.com/naraya-albani.png"
-                      alt="@naraya-albani"
-                    />
-                    <AvatarFallback>NA</AvatarFallback>
-                  </Avatar>
-                </ItemMedia>
-                <ItemContent>
-                  <ItemTitle>Naraya Albani</ItemTitle>
-                  <ItemDescription>Full-stack Web Developer</ItemDescription>
-                </ItemContent>
-                <ItemActions>
-                  <Button variant="outline" size="sm" asChild>
-                    <a
-                      href={cvUrl}
-                      download
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      Download CV
-                    </a>
-                  </Button>
-                </ItemActions>
-              </Item>
-              <p className="text-card-foreground leading-relaxed font-sans flex-1 text-sm">
-                Mahasiswa Teknik Informatika dengan pengalaman di bidang
-                pengembangan perangkat lunak, desain UI/UX, dan manajemen
-                proyek.
-              </p>
-              <GitHubContributions />
-              <div className="space-y-4 mt-4">
-                <div>
-                  <h3 className="font-bold text-card-foreground font-sans">
-                    Tech Stack
-                  </h3>
-                  <div className="flex flex-wrap gap-2 mt-4">
-                    <img
-                      width="48"
-                      height="48"
-                      src="https://img.icons8.com/fluency/96/nextjs.png"
-                      alt="nextjs"
-                    />
-                    <img
-                      width="48"
-                      height="48"
-                      src="https://img.icons8.com/fluency/48/laravel.png"
-                      alt="laravel"
-                    />
-                    <img
-                      width="48"
-                      height="48"
-                      src="https://img.icons8.com/color/48/flutter.png"
-                      alt="flutter"
-                    />
-                    <img
-                      width="48"
-                      height="48"
-                      src="https://img.icons8.com/fluency/48/python.png"
-                      alt="python"
-                    />
-                    <img
-                      width="48"
-                      height="48"
-                      src="https://img.icons8.com/color/48/java-coffee-cup-logo--v1.png"
-                      alt="java-coffee-cup-logo--v1"
-                    />
-                  </div>
-                </div>
-                <div>
-                  <h3 className="font-bold text-card-foreground font-sans">
-                    Design & Tools
-                  </h3>
-                  <div className="flex flex-wrap gap-2 mt-4">
-                    <img
-                      width="48"
-                      height="48"
-                      src="https://img.icons8.com/color/48/adobe-premiere-pro--v1.png"
-                      alt="adobe-premiere-pro--v1"
-                    />
-                    <img
-                      width="48"
-                      height="48"
-                      src="https://img.icons8.com/color/48/adobe-illustrator--v1.png"
-                      alt="adobe-illustrator--v1"
-                    />
-                    <img
-                      width="48"
-                      height="48"
-                      src="https://img.icons8.com/color/48/adobe-photoshop--v1.png"
-                      alt="adobe-photoshop--v1"
-                    />
-                    <img
-                      width="48"
-                      height="48"
-                      src="https://img.icons8.com/ios-filled/50/aseprite.png"
-                      alt="aseprite"
-                      className="bg-white rounded"
-                    />
-                    <img
-                      width="48"
-                      height="48"
-                      src="https://img.icons8.com/color/48/blender-3d.png"
-                      alt="blender-3d"
-                      className="bg-white rounded"
-                    />
-                    <img
-                      width="48"
-                      height="48"
-                      src="https://img.icons8.com/fluency/48/canva.png"
-                      alt="canva"
-                    />
-                    <img
-                      width="48"
-                      height="48"
-                      src="https://img.icons8.com/fluency/48/figma.png"
-                      alt="figma"
-                    />
-                  </div>
-                </div>
-              </div>
-            </div>
-          </Card>
+          <AboutCard
+            cvUrl={cvUrl}
+            githubContributions={
+              <Suspense
+                fallback={
+                  <div className="h-16 animate-pulse bg-muted rounded" />
+                }
+              >
+                <GitHubContributions />
+              </Suspense>
+            }
+          />
 
           {/* Experience - Medium Card (Top Middle) */}
           <Card
