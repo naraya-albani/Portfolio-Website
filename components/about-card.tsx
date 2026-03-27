@@ -18,12 +18,14 @@ interface AboutCardProps {
   cvUrl: string;
   githubContributions: ReactNode;
   githubStats: ReactNode;
+  wakaTime: ReactNode;
 }
 
 export function AboutCard({
   cvUrl,
   githubContributions,
   githubStats,
+  wakaTime,
 }: AboutCardProps) {
   const [expanded, setExpanded] = useState(false);
 
@@ -183,6 +185,8 @@ export function AboutCard({
                 alt="figma"
               />
             </div>
+
+            {expanded && <div>{wakaTime}</div>}
           </div>
         </Card>
       </motion.div>

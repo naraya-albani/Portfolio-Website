@@ -32,6 +32,7 @@ import {
 import { AboutCard } from "@/components/about-card";
 import { Suspense } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
+import WakaTimeStats from "@/components/wakatime-components";
 
 export default async function Home() {
   const blocks = await fetchPageBlocks();
@@ -74,6 +75,13 @@ export default async function Home() {
                 fallback={<Skeleton className="absolute inset-0 rounded-lg" />}
               >
                 <GitHubStats />
+              </Suspense>
+            }
+            wakaTime={
+              <Suspense
+                fallback={<Skeleton className="absolute inset-0 rounded-lg" />}
+              >
+                <WakaTimeStats />
               </Suspense>
             }
           />
