@@ -25,9 +25,13 @@ import { getRepos } from "@/lib/github";
 import { ItemGroup } from "@/components/ui/item";
 import { ProjectCard, ProjectItem } from "@/components/project-components";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { GitHubContributions } from "@/components/github-contribution";
+import {
+  GitHubContributions,
+  GitHubStats,
+} from "@/components/github-components";
 import { AboutCard } from "@/components/about-card";
 import { Suspense } from "react";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export default async function Home() {
   const blocks = await fetchPageBlocks();
@@ -60,11 +64,16 @@ export default async function Home() {
             cvUrl={cvUrl}
             githubContributions={
               <Suspense
-                fallback={
-                  <div className="h-16 animate-pulse bg-muted rounded" />
-                }
+                fallback={<Skeleton className="absolute inset-0 rounded-lg" />}
               >
                 <GitHubContributions />
+              </Suspense>
+            }
+            githubStats={
+              <Suspense
+                fallback={<Skeleton className="absolute inset-0 rounded-lg" />}
+              >
+                <GitHubStats />
               </Suspense>
             }
           />
