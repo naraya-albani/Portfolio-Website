@@ -1,4 +1,9 @@
-import { Card } from "@/components/ui/card";
+import {
+  Card,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 
 interface WakaTimeData {
   data: {
@@ -88,9 +93,11 @@ export default async function WakaTimeStats() {
 
 function Stat({ title, value }: { title: string; value: string }) {
   return (
-    <Card className="p-4">
-      <p className="text-sm text-muted-foreground">{title}</p>
-      <p className="font-semibold">{value}</p>
+    <Card>
+      <CardHeader>
+        <CardDescription>{title}</CardDescription>
+        <CardTitle className="text-xl">{value}</CardTitle>
+      </CardHeader>
     </Card>
   );
 }

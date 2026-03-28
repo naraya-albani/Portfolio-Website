@@ -53,13 +53,9 @@ export default async function Home() {
   )) as Experience[];
 
   return (
-    <div className="min-h-screen bg-background p-4 md:p-8">
-      <div className="max-w-6xl mx-auto">
-        <div className="flex justify-end mb-6 gap-4">
-          <ThemeToggle />
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-6 h-200 md:h-150">
+    <div className="min-h-screen flex flex-col bg-background p-4 md:p-8">
+      <div className="max-w-6xl mx-auto flex-1 w-full">
+        <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-6">
           {/* About Me - Tall Card (Top Left) */}
           <AboutCard
             cvUrl={cvUrl}
@@ -264,7 +260,7 @@ export default async function Home() {
             <div className="relative z-10">
               <div className="flex justify-between">
                 <h3 className="font-bold text-card-foreground mb-4 font-sans">
-                  Recent Projects
+                  Popular Projects
                 </h3>
                 {repos.length > 2 && (
                   <Dialog>
@@ -306,14 +302,12 @@ export default async function Home() {
             </div>
           </Card>
         </div>
-
-        {/* Footer */}
-        <footer className="mt-12 text-center">
-          <p className="text-muted-foreground text-sm font-sans">
-            © 2026 Naraya Albani. All rights reserved.
-          </p>
-        </footer>
       </div>
+      <footer className="mt-8 text-center">
+        <p className="text-muted-foreground text-sm font-sans">
+          © 2026 Naraya Albani. All rights reserved.
+        </p>
+      </footer>
     </div>
   );
 }

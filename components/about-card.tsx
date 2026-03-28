@@ -13,6 +13,9 @@ import {
   ItemActions,
 } from "@/components/ui/item";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
+import { ThemeToggle } from "./theme-toggle";
+import { FileUser } from "lucide-react";
+import { Tooltip, TooltipContent, TooltipTrigger } from "./ui/tooltip";
 
 interface AboutCardProps {
   cvUrl: string;
@@ -74,22 +77,30 @@ export function AboutCard({
                 <ItemDescription>Full-stack Web Developer</ItemDescription>
               </ItemContent>
               <ItemActions>
-                <Button variant="outline" size="sm" asChild>
-                  <a
-                    href={cvUrl}
-                    download
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    Download CV
-                  </a>
-                </Button>
+                <ThemeToggle />
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button variant="outline" size="sm" asChild>
+                      <a
+                        href={cvUrl}
+                        download
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        <FileUser />
+                      </a>
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>Download CV</p>
+                  </TooltipContent>
+                </Tooltip>
               </ItemActions>
             </Item>
 
             <p className="text-card-foreground leading-relaxed font-sans text-sm">
-              Mahasiswa Teknik Informatika dengan pengalaman di bidang
-              pengembangan perangkat lunak, desain UI/UX, dan manajemen proyek.
+              Computer Science student with experience in software development,
+              UI/UX design, and project management.
             </p>
 
             <h3 className="mt-4 font-bold text-card-foreground font-sans">
@@ -185,6 +196,12 @@ export function AboutCard({
                 alt="figma"
               />
             </div>
+
+            {expanded && (
+              <h3 className="mt-4 font-bold text-card-foreground font-sans">
+                WakaTime Stats
+              </h3>
+            )}
 
             {expanded && <div>{wakaTime}</div>}
           </div>
