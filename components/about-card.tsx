@@ -50,12 +50,28 @@ export function AboutCard({
 
       {/* Card dengan layoutId agar posisi/ukuran dianimasikan */}
       <motion.div
+        whileHover={expanded ? {} : { scale: 1.05 }}
+        // variants={{
+        //   hidden: { opacity: 0, y: 32, scale: 0.97 },
+        //   visible: {
+        //     opacity: 1,
+        //     y: 0,
+        //     scale: 1,
+        //     transition: {
+        //       duration: 0.5,
+        //       ease: [0.22, 1, 0.36, 1],
+        //     },
+        //   },
+        // }}
+        // initial="hidden"
+        // whileInView="visible"
+        // viewport={{ once: true, amount: 0.15 }}
         layoutId="about-card"
         onClick={() => !expanded && setExpanded(true)}
         className={
           expanded
             ? "fixed inset-0 m-auto z-50 w-[min(90vw,600px)] h-fit max-h-[90vh] overflow-y-auto cursor-default"
-            : "md:col-span-3 lg:col-span-2 md:row-span-2 cursor-pointer"
+            : "md:col-span-3 lg:col-span-2 md:row-span-2"
         }
         style={{ borderRadius: 16 }}
         transition={{ type: "spring", stiffness: 300, damping: 30 }}

@@ -8,7 +8,6 @@ import {
   Instagram,
   Building2,
 } from "lucide-react";
-import { ThemeToggle } from "@/components/theme-toggle";
 import {
   Dialog,
   DialogContent,
@@ -89,7 +88,7 @@ export default async function Home() {
           >
             <div className="relative z-10">
               <div className="flex justify-between">
-                <h3 className="font-bold text-card-foreground mb-4 font-sans">
+                <h3 className="font-bold text-card-foreground font-sans">
                   Experiences
                 </h3>
                 {experiences.length > 3 && (
@@ -117,52 +116,54 @@ export default async function Home() {
                   </Dialog>
                 )}
               </div>
-              {experiences.slice(0, 3).map((exp) => (
-                <Dialog key={exp.id}>
-                  <DialogTrigger asChild>
-                    <div className="flex items-start gap-3 hover:bg-accent p-2 rounded-xl cursor-pointer transition-colors">
-                      {/* logo perusahaan */}
-                      <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center shrink-0 overflow-hidden">
-                        {exp.icon?.external.url ? (
-                          <Image
-                            src={exp.icon.external.url}
-                            alt={exp.properties.Name.title?.[0].plain_text}
-                            width={200}
-                            height={200}
-                            className="w-full h-full object-cover"
-                          />
-                        ) : (
-                          <Building2 className="w-5 h-5 text-primary" />
-                        )}
-                      </div>
+              <div className="mt-4">
+                {experiences.slice(0, 3).map((exp) => (
+                  <Dialog key={exp.id}>
+                    <DialogTrigger asChild>
+                      <div className="flex items-start gap-3 hover:bg-accent p-2 rounded-xl cursor-pointer transition-colors">
+                        {/* logo perusahaan */}
+                        <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center shrink-0 overflow-hidden">
+                          {exp.icon?.external.url ? (
+                            <Image
+                              src={exp.icon.external.url}
+                              alt={exp.properties.Name.title?.[0].plain_text}
+                              width={200}
+                              height={200}
+                              className="w-full h-full object-cover"
+                            />
+                          ) : (
+                            <Building2 className="w-5 h-5 text-primary" />
+                          )}
+                        </div>
 
-                      <div className="flex-1 min-w-0">
-                        <h4 className="font-semibold text-card-foreground text-sm truncate">
-                          {exp.properties.Name.title?.[0].plain_text}
-                        </h4>
-                        <p className="text-xs text-muted-foreground">
-                          <Badge
-                            color={
-                              exp.properties.Position.multi_select?.[0].color
-                            }
-                          >
-                            {exp.properties.Position.multi_select?.[0].name}
-                          </Badge>{" "}
-                          •{" "}
-                          {new Intl.DateTimeFormat("en-US", {
-                            year: "numeric",
-                            month: "long",
-                          }).format(
-                            new Date(exp.properties.Date.date.start),
-                          )}{" "}
-                          – Present
-                        </p>
+                        <div className="flex-1 min-w-0">
+                          <h4 className="font-semibold text-card-foreground text-sm truncate">
+                            {exp.properties.Name.title?.[0].plain_text}
+                          </h4>
+                          <p className="text-xs text-muted-foreground">
+                            <Badge
+                              color={
+                                exp.properties.Position.multi_select?.[0].color
+                              }
+                            >
+                              {exp.properties.Position.multi_select?.[0].name}
+                            </Badge>{" "}
+                            •{" "}
+                            {new Intl.DateTimeFormat("en-US", {
+                              year: "numeric",
+                              month: "long",
+                            }).format(
+                              new Date(exp.properties.Date.date.start),
+                            )}{" "}
+                            – Present
+                          </p>
+                        </div>
                       </div>
-                    </div>
-                  </DialogTrigger>
-                  <ExperienceCard exp={exp} />
-                </Dialog>
-              ))}
+                    </DialogTrigger>
+                    <ExperienceCard exp={exp} />
+                  </Dialog>
+                ))}
+              </div>
             </div>
           </Card>
 
@@ -259,7 +260,7 @@ export default async function Home() {
           >
             <div className="relative z-10">
               <div className="flex justify-between">
-                <h3 className="font-bold text-card-foreground mb-4 font-sans">
+                <h3 className="font-bold text-card-foreground font-sans">
                   Popular Projects
                 </h3>
                 {repos.length > 2 && (
@@ -289,7 +290,7 @@ export default async function Home() {
                   </Dialog>
                 )}
               </div>
-              <ItemGroup className="gap-2">
+              <ItemGroup className="gap-2 mt-4">
                 {repos.slice(0, 2).map((repo: any) => (
                   <Dialog key={repo.id}>
                     <DialogTrigger asChild>
