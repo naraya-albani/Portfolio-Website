@@ -1,33 +1,16 @@
+"use client";
+
+import { Card, CardDescription, CardHeader, CardTitle } from "./ui/card";
 import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "./ui/card";
+  ContributionCalendar,
+  ContributionWeek,
+  GitHubStatsProps,
+} from "@/types";
+import { useTheme } from "next-themes";
+import { useEffect, useState } from "react";
 
-interface ContributionDay {
-  date: string;
-  contributionCount: number;
-}
-
-interface ContributionWeek {
-  firstDay: string;
-  contributionDays: ContributionDay[];
-}
-
-interface ContributionCalendar {
-  totalContributions: number;
-  weeks: ContributionWeek[];
-}
-
-interface GitHubStatsProps {
-  followers: number;
-  following: number;
-  publicRepos: number;
-}
-
-const COLORS = ["#161b22", "#0e4429", "#006d32", "#26a641", "#39d353"];
+const LIGHT_COLORS = ["#ebedf0", "#9be9a8", "#40c463", "#30a14e", "#216e39"];
+const DARK_COLORS = ["#161b22", "#0e4429", "#006d32", "#26a641", "#39d353"];
 const MONTH_NAMES = [
   "Jan",
   "Feb",
@@ -43,91 +26,6 @@ const MONTH_NAMES = [
   "Des",
 ];
 const DAY_LABELS = ["Mon", "Wed", "Fri"];
-
-const GQL_QUERY = `
-  query($username: String!, $from: DateTime!, $to: DateTime!) {
-    user(login: $username) {
-      followers { totalCount }
-      following { totalCount }
-      repositories(privacy: PUBLIC) { totalCount }
-      contributionsCollection(from: $from, to: $to) {
-        contributionCalendar {
-          totalContributions
-          weeks {
-            firstDay
-            contributionDays {
-              date
-              contributionCount
-            }
-          }
-        }
-      }
-    }
-  }
-`;
-
-async function fetchContributions(): Promise<{
-  calendar: ContributionCalendar;
-  stats: GitHubStatsProps;
-} | null> {
-  const username = process.env.GITHUB_USERNAME;
-  const token = process.env.GITHUB_TOKEN;
-
-  if (!token) {
-    console.error("GITHUB_TOKEN tidak ditemukan di .env.local");
-    return null;
-  }
-
-  const now = new Date();
-  const to = now.toISOString();
-  const from = new Date(
-    now.getFullYear(),
-    now.getMonth() - 5,
-    now.getDate(),
-  ).toISOString();
-
-  try {
-    const res = await fetch("https://api.github.com/graphql", {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${token}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        query: GQL_QUERY,
-        variables: { username, from, to },
-      }),
-      next: { revalidate: 3600 },
-    });
-
-    const data = await res.json();
-    if (data.errors) {
-      console.error("GitHub API error:", data.errors[0].message);
-      return null;
-    }
-
-    const user = data.data.user;
-    return {
-      calendar: user.contributionsCollection.contributionCalendar,
-      stats: {
-        followers: user.followers.totalCount,
-        following: user.following.totalCount,
-        publicRepos: user.repositories.totalCount,
-      },
-    };
-  } catch (err) {
-    console.error("Fetch error:", err);
-    return null;
-  }
-}
-
-function getColor(count: number): string {
-  if (count === 0) return COLORS[0];
-  if (count <= 2) return COLORS[1];
-  if (count <= 5) return COLORS[2];
-  if (count <= 9) return COLORS[3];
-  return COLORS[4];
-}
 
 function computeWeekContributions(weeks: ContributionWeek[]): number {
   const lastWeek = weeks[weeks.length - 1];
@@ -165,38 +63,27 @@ function StatCard({ label, value }: { label: string; value: string | number }) {
   );
 }
 
-async function GitHubStats() {
-  const result = await fetchContributions();
-  if (!result) return null;
-
-  const { calendar, stats } = result;
-  const { totalContributions, weeks } = calendar;
-
-  const thisWeek = computeWeekContributions(weeks);
-  const bestDay = computeBestDay(weeks);
-  const dailyAvg = computeDailyAvg(totalContributions, weeks);
-
-  return (
-    <div className="space-y-2">
-      <div className="grid grid-cols-3 gap-2">
-        <StatCard label="Followers" value={stats.followers} />
-        <StatCard label="Following" value={stats.following} />
-        <StatCard label="Repositories" value={stats.publicRepos} />
-      </div>
-
-      <div className="grid grid-cols-4 gap-2">
-        <StatCard label="Contributions" value={totalContributions} />
-        <StatCard label="This Week" value={thisWeek} />
-        <StatCard label="Best Day" value={bestDay} />
-        <StatCard label="Daily Avg" value={`${dailyAvg}/day`} />
-      </div>
-    </div>
-  );
+function getColor(count: number, colors: string[]): string {
+  if (count === 0) return colors[0];
+  if (count <= 2) return colors[1];
+  if (count <= 5) return colors[2];
+  if (count <= 9) return colors[3];
+  return colors[4];
 }
 
-async function GitHubContributions() {
-  const result = await fetchContributions();
-  if (!result) return null;
+function GitHubContributions(result: { calendar: ContributionCalendar }) {
+  const { theme } = useTheme();
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  const colors = mounted
+    ? theme === "dark"
+      ? DARK_COLORS
+      : LIGHT_COLORS
+    : LIGHT_COLORS;
 
   const { calendar } = result;
   const { weeks } = calendar;
@@ -256,7 +143,7 @@ async function GitHubContributions() {
                     className="w-full aspect-square rounded-[2px]"
                     style={{
                       background: day
-                        ? getColor(day.contributionCount)
+                        ? getColor(day.contributionCount, colors)
                         : "transparent",
                     }}
                   />
@@ -270,13 +157,11 @@ async function GitHubContributions() {
       {/* Legend */}
       <div className="flex items-center gap-1.5 mt-2 justify-end">
         <span className="text-[11px] text-muted-foreground">Sedikit</span>
-        {COLORS.map((c) => (
+        {colors.map((c) => (
           <div
             key={c}
+            className="size-3 sborder border-border rounded-xs"
             style={{
-              width: 12,
-              height: 12,
-              borderRadius: 2,
               background: c,
             }}
           />
@@ -284,6 +169,35 @@ async function GitHubContributions() {
         <span className="text-[11px] text-muted-foreground">Banyak</span>
       </div>
     </>
+  );
+}
+
+function GitHubStats(result: {
+  calendar: ContributionCalendar;
+  stats: GitHubStatsProps;
+}) {
+  const { calendar, stats } = result;
+  const { totalContributions, weeks } = calendar;
+
+  const thisWeek = computeWeekContributions(weeks);
+  const bestDay = computeBestDay(weeks);
+  const dailyAvg = computeDailyAvg(totalContributions, weeks);
+
+  return (
+    <div className="space-y-2">
+      <div className="grid grid-cols-3 gap-2">
+        <StatCard label="Followers" value={stats.followers} />
+        <StatCard label="Following" value={stats.following} />
+        <StatCard label="Repositories" value={stats.publicRepos} />
+      </div>
+
+      <div className="grid grid-cols-4 gap-2">
+        <StatCard label="Contributions" value={totalContributions} />
+        <StatCard label="This Week" value={thisWeek} />
+        <StatCard label="Best Day" value={bestDay} />
+        <StatCard label="Daily Avg" value={`${dailyAvg}/day`} />
+      </div>
+    </div>
   );
 }
 

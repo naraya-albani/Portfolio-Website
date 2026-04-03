@@ -19,8 +19,8 @@ import {
 import { fetchDatabase, fetchPageBlocks } from "@/lib/notion";
 import { ExperienceCard } from "@/components/experience-card";
 import Image from "next/image";
-import { Experience } from "@/types";
-import { getRepos } from "@/lib/github";
+import { Experience, WakaTimeData } from "@/types";
+import { fetchContributions, getRepos } from "@/lib/github";
 import { ItemGroup } from "@/components/ui/item";
 import { ProjectCard, ProjectItem } from "@/components/project-components";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -31,7 +31,8 @@ import {
 import { AboutCard } from "@/components/about-card";
 import { Suspense } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
-import WakaTimeStats from "@/components/wakatime-components";
+import { fetchWakaTime } from "@/lib/wakatime";
+import { WakaTimeStats } from "@/components/wakatime-components";
 
 export default async function Home() {
   const blocks = await fetchPageBlocks();
@@ -40,6 +41,11 @@ export default async function Home() {
   const cvUrl = (cvBlock as any).file.file.url;
 
   const repos = await getRepos();
+  const result = await fetchContributions();
+  if (!result) return null;
+
+  const wakatime = (await fetchWakaTime()) as WakaTimeData["data"];
+  if (!wakatime) return null;
 
   const experienceBlock = blocks.filter(
     (block: any) =>
@@ -62,21 +68,21 @@ export default async function Home() {
               <Suspense
                 fallback={<Skeleton className="absolute inset-0 rounded-lg" />}
               >
-                <GitHubContributions />
+                <GitHubContributions calendar={result.calendar} />
               </Suspense>
             }
             githubStats={
               <Suspense
                 fallback={<Skeleton className="absolute inset-0 rounded-lg" />}
               >
-                <GitHubStats />
+                <GitHubStats calendar={result.calendar} stats={result.stats} />
               </Suspense>
             }
             wakaTime={
               <Suspense
                 fallback={<Skeleton className="absolute inset-0 rounded-lg" />}
               >
-                <WakaTimeStats />
+                <WakaTimeStats {...wakatime} />
               </Suspense>
             }
           />
@@ -84,7 +90,7 @@ export default async function Home() {
           {/* Experience - Medium Card (Top Middle) */}
           <Card
             id="experience"
-            className="md:col-span-2 p-6 bg-card border border-border relative rounded-2xl shadow-none"
+            className="md:col-span-2 p-6 bg-card border border-border relative rounded-2xl shadow-none transition-transform duration-200 hover:scale-105"
           >
             <div className="relative z-10">
               <div className="flex justify-between">
@@ -168,7 +174,7 @@ export default async function Home() {
           </Card>
 
           {/* Status - Square Card (Top Right) */}
-          <Card className="md:col-span-1 p-6 bg-card border border-border relative rounded-2xl shadow-none">
+          <Card className="md:col-span-1 p-6 bg-card border border-border relative rounded-2xl shadow-none transition-transform duration-200 hover:scale-105">
             <div className="relative z-10">
               <div className="flex items-center gap-3 mb-4">
                 <div className="w-3 h-3 rounded-full bg-green-500 animate-pulse"></div>
@@ -203,7 +209,7 @@ export default async function Home() {
           {/* Social Links - Square Card (Bottom Left) */}
           <Card
             id="contact"
-            className="md:col-span-1 p-6 bg-card border border-border relative rounded-2xl shadow-none"
+            className="md:col-span-1 p-6 bg-card border border-border relative rounded-2xl shadow-none transition-transform duration-200 hover:scale-105"
           >
             <div className="relative z-10">
               <h3 className="font-semibold text-card-foreground mb-4 font-sans">
@@ -256,7 +262,7 @@ export default async function Home() {
           {/* Projects - Large Card (Bottom Right) */}
           <Card
             id="projects"
-            className="md:col-span-2 lg:col-span-2 p-6 bg-card border border-border relative rounded-2xl shadow-none"
+            className="md:col-span-2 lg:col-span-2 p-6 bg-card border border-border relative rounded-2xl shadow-none transition-transform duration-200 hover:scale-105"
           >
             <div className="relative z-10">
               <div className="flex justify-between">

@@ -11,7 +11,7 @@ import { LanguageIcon } from "./language-icon";
 import { Badge } from "./ui/badge";
 import { Separator } from "./ui/separator";
 import { Button } from "./ui/button";
-import { Download, FileQuestion, Github, Info, Link } from "lucide-react";
+import { Github, Info, Link } from "lucide-react";
 import {
   Empty,
   EmptyDescription,

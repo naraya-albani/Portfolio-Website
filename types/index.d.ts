@@ -60,3 +60,45 @@ export interface Experience {
     };
   };
 }
+
+export interface ContributionDay {
+  date: string;
+  contributionCount: number;
+}
+
+export interface ContributionWeek {
+  firstDay: string;
+  contributionDays: ContributionDay[];
+}
+
+export interface ContributionCalendar {
+  totalContributions: number;
+  weeks: ContributionWeek[];
+}
+
+export interface GitHubStatsProps {
+  followers: number;
+  following: number;
+  publicRepos: number;
+}
+
+export interface WakaTimeData {
+  data: {
+    start: string;
+    end: string;
+    human_readable_daily_average: string;
+    human_readable_total: string;
+    best_day: {
+      date: string;
+      text: string;
+    };
+    languages: {
+      name: string;
+      percent: number;
+    }[];
+    editors: {
+      name: string;
+      percent: number;
+    }[];
+  };
+}

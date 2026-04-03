@@ -1,7 +1,4 @@
-"use client";
-
-import { ReactNode, useState } from "react";
-import { motion, AnimatePresence } from "motion/react";
+import { ReactNode } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import {
@@ -16,6 +13,8 @@ import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { ThemeToggle } from "./theme-toggle";
 import { FileUser } from "lucide-react";
 import { Tooltip, TooltipContent, TooltipTrigger } from "./ui/tooltip";
+import { ScrollArea } from "./ui/scroll-area";
+import { Dialog, DialogContent, DialogTrigger } from "./ui/dialog";
 
 interface AboutCardProps {
   cvUrl: string;
@@ -30,53 +29,13 @@ export function AboutCard({
   githubStats,
   wakaTime,
 }: AboutCardProps) {
-  const [expanded, setExpanded] = useState(false);
-
   return (
-    <>
-      {/* Overlay backdrop saat expanded */}
-      <AnimatePresence>
-        {expanded && (
-          <motion.div
-            key="backdrop"
-            className="fixed inset-0 bg-black/40 z-40 backdrop-blur-sm"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            onClick={() => setExpanded(false)}
-          />
-        )}
-      </AnimatePresence>
-
-      {/* Card dengan layoutId agar posisi/ukuran dianimasikan */}
-      <motion.div
-        whileHover={expanded ? {} : { scale: 1.05 }}
-        // variants={{
-        //   hidden: { opacity: 0, y: 32, scale: 0.97 },
-        //   visible: {
-        //     opacity: 1,
-        //     y: 0,
-        //     scale: 1,
-        //     transition: {
-        //       duration: 0.5,
-        //       ease: [0.22, 1, 0.36, 1],
-        //     },
-        //   },
-        // }}
-        // initial="hidden"
-        // whileInView="visible"
-        // viewport={{ once: true, amount: 0.15 }}
-        layoutId="about-card"
-        onClick={() => !expanded && setExpanded(true)}
-        className={
-          expanded
-            ? "fixed inset-0 m-auto z-50 w-[min(90vw,600px)] h-fit max-h-[90vh] overflow-y-auto cursor-default"
-            : "md:col-span-3 lg:col-span-2 md:row-span-2"
-        }
-        style={{ borderRadius: 16 }}
-        transition={{ type: "spring", stiffness: 300, damping: 30 }}
-      >
-        <Card className="p-6 bg-card border border-border rounded-2xl shadow-none h-full">
+    <Dialog>
+      <DialogTrigger asChild>
+        <Card
+          id="about"
+          className="md:col-span-3 lg:col-span-2 md:row-span-2 p-6 bg-card border border-border relative rounded-2xl shadow-none transition-transform duration-200 hover:scale-105"
+        >
           <div className="space-y-4 h-full relative z-10">
             <Item className="p-0 mb-4">
               <ItemMedia>
@@ -123,7 +82,145 @@ export function AboutCard({
               GitHub Activity
             </h3>
 
-            {expanded && <div>{githubStats}</div>}
+            {githubContributions}
+
+            <h3 className="font-bold text-card-foreground font-sans">
+              Tech Stack
+            </h3>
+            <div className="flex flex-wrap gap-2">
+              <img
+                width="48"
+                height="48"
+                src="https://img.icons8.com/fluency/96/nextjs.png"
+                alt="nextjs"
+              />
+              <img
+                width="48"
+                height="48"
+                src="https://img.icons8.com/fluency/48/laravel.png"
+                alt="laravel"
+              />
+              <img
+                width="48"
+                height="48"
+                src="https://img.icons8.com/color/48/flutter.png"
+                alt="flutter"
+              />
+              <img
+                width="48"
+                height="48"
+                src="https://img.icons8.com/fluency/48/python.png"
+                alt="python"
+              />
+              <img
+                width="48"
+                height="48"
+                src="https://img.icons8.com/color/48/java-coffee-cup-logo--v1.png"
+                alt="java"
+              />
+            </div>
+
+            <h3 className="font-bold text-card-foreground font-sans">
+              Design & Tools
+            </h3>
+            <div className="flex flex-wrap gap-2">
+              <img
+                width="48"
+                height="48"
+                src="https://img.icons8.com/color/48/adobe-premiere-pro--v1.png"
+                alt="premiere"
+              />
+              <img
+                width="48"
+                height="48"
+                src="https://img.icons8.com/color/48/adobe-illustrator--v1.png"
+                alt="illustrator"
+              />
+              <img
+                width="48"
+                height="48"
+                src="https://img.icons8.com/color/48/adobe-photoshop--v1.png"
+                alt="photoshop"
+              />
+              <img
+                width="48"
+                height="48"
+                src="https://img.icons8.com/ios-filled/50/aseprite.png"
+                alt="aseprite"
+                className="bg-white rounded"
+              />
+              <img
+                width="48"
+                height="48"
+                src="https://img.icons8.com/color/48/blender-3d.png"
+                alt="blender"
+                className="bg-white rounded"
+              />
+              <img
+                width="48"
+                height="48"
+                src="https://img.icons8.com/fluency/48/canva.png"
+                alt="canva"
+              />
+              <img
+                width="48"
+                height="48"
+                src="https://img.icons8.com/fluency/48/figma.png"
+                alt="figma"
+              />
+            </div>
+          </div>
+        </Card>
+      </DialogTrigger>
+      <DialogContent>
+        <ScrollArea className="h-[calc(90vh-3rem)] pr-3 py-6">
+          <div className="space-y-4 h-full relative z-10">
+            <Item className="p-0 mb-4">
+              <ItemMedia>
+                <Avatar size="lg">
+                  <AvatarImage
+                    src="https://github.com/naraya-albani.png"
+                    alt="@naraya-albani"
+                  />
+                  <AvatarFallback>NA</AvatarFallback>
+                </Avatar>
+              </ItemMedia>
+              <ItemContent>
+                <ItemTitle>Naraya Albani</ItemTitle>
+                <ItemDescription>Full-stack Web Developer</ItemDescription>
+              </ItemContent>
+              <ItemActions>
+                <ThemeToggle />
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button variant="outline" size="sm" asChild>
+                      <a
+                        href={cvUrl}
+                        download
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        <FileUser />
+                      </a>
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>Download CV</p>
+                  </TooltipContent>
+                </Tooltip>
+              </ItemActions>
+            </Item>
+
+            <p className="text-card-foreground leading-relaxed font-sans text-sm">
+              Computer Science student with experience in software development,
+              UI/UX design, and project management.
+            </p>
+
+            <h3 className="mt-4 font-bold text-card-foreground font-sans">
+              GitHub Activity
+            </h3>
+
+            {githubStats}
 
             {githubContributions}
 
@@ -213,16 +310,14 @@ export function AboutCard({
               />
             </div>
 
-            {expanded && (
-              <h3 className="mt-4 font-bold text-card-foreground font-sans">
-                WakaTime Stats
-              </h3>
-            )}
+            <h3 className="mt-4 font-bold text-card-foreground font-sans">
+              WakaTime Stats
+            </h3>
 
-            {expanded && <div>{wakaTime}</div>}
+            {wakaTime}
           </div>
-        </Card>
-      </motion.div>
-    </>
+        </ScrollArea>
+      </DialogContent>
+    </Dialog>
   );
 }
